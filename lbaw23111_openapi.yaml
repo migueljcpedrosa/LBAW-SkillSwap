@@ -1,0 +1,759 @@
+openapi: 3.0.0
+
+info:
+ version: '2.0'
+ title: 'SkillSwap Web API'
+ description: 'Web Resources Specification for SkillSwap'
+
+servers:
+- url: https://lbaw23111.fe.up.pt
+  description: Production server
+
+externalDocs:
+ description: Find more info here.
+ url: https://git.fe.up.pt/lbaw/lbaw2324/lbaw23111/-/wikis/eap
+
+tags:
+ - name: 'M01: Users'
+ - name: 'M02: Posts'
+ - name: 'M05: Search'
+ - name: 'M06: Administration'
+ - name: 'M07: Authentication'
+
+paths:
+  /user/{username}:
+    get:
+      operationId: 'R101'
+      summary: 'R101: User Profile'
+      description: 'Get user profile information. Access: ADM, USR, OWN, PUB'
+      tags:
+        - 'M01: Users'
+      parameters:
+        - name: 'username'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+      responses:
+        '200': 
+          description: 'All right. Show Profile'
+        '302':
+          description: 'If user is not logged in and profile is private or if user is logged in and profile is private and they aren t friends, redirect to home page'
+          headers:
+            Location:
+              schema:
+                type: string
+              examples:
+                302Success:
+                  description: 'OK. You are in. Redirect to user profile.'
+                  value: '/user/{username}'
+                302Failure:
+                  description: 'You shall not pass. Redirect again to home.'
+                  value: '/home'
+        '404':
+          description: 'Resource not found'
+    
+  /user/{username}/edit:
+    get:
+      operationId: 'R102'
+      summary: 'R102: User Edit Profile Page'
+      description: 'Get user edit profile page. Access: USR'
+      tags:
+        - 'M01: Users'
+      parameters:
+        - name: 'username'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+      responses:
+        '200': 
+          description: 'All right. Show Edit Profile Page'
+        '302':
+          description: 'If user is not logged in and profile is private or if user is logged in and profile is private and they aren t friends, redirect to profile page'
+          headers:
+            Location:
+              schema:
+                type: string
+              examples:
+                302Success:
+                  description: 'OK. You are in. Redirect to user profile edit.'
+                  value: '/user/{username}/edit'
+                302Failure:
+                  description: 'You shall not pass. Redirect again to user profile.'
+                  value: '/user/{username}'
+        '404':
+          description: 'Resource not found'
+
+  /user/edit:
+     put:
+      operationId: 'R103'
+      summary: 'R103: User Edit Profile Action'
+      description: 'Edit user profile information. Access: USR'
+      tags:
+        - 'M01: Users'
+      parameters:
+        - name: 'username'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+        - name: 'name'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+        - name: 'email'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+        - name: 'phone_number'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+        - name: 'birth_date'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+        - name: 'profile_picture'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+        - name: 'description'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+
+      responses:
+        '200': 
+          description: 'All right. Edit Profile'
+        '302':
+          description: 'If not logged in, redirect to home page'
+          headers:
+            Location:
+              schema:
+                type: string
+              examples:
+                302Success:
+                  description: 'OK. You are in. Redirect to user profile edit.'
+                  value: '/user/edit'
+                302Failure:
+                  description: 'You shall not pass. Redirect again to home page.'
+                  value: '/home'
+
+  /posts/create:
+     post:
+      operationId: 'R201'
+      summary: 'R201: Create post action'
+      description: 'Create post. Access: USR'
+      tags:
+        - 'M02: Posts'
+      parameters:
+        - name: 'description'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+        - name: 'files'
+          in: 'path'
+          required: true
+          schema:
+            type: 'array'
+        - name: 'public_post'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+        - name: 'date'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+        - name: 'user_id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'integer'
+        - name: 'group_id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'integer'
+      responses:
+        '200': 
+          description: 'All right. Create Post'
+        '302':
+          description: 'If not logged in, redirect to home page'
+          headers:
+            Location:
+              schema:
+                type: string
+              examples:
+                302Success:
+                  description: 'OK. You are in. Redirect to home page.'
+                  value: '/home'
+                302Failure:
+                  description: 'You shall not pass. Redirect again to home page.'
+                  value: '/home'          
+
+  /posts/edit:
+      put:
+        operationId: 'R202'
+        summary: 'R202: Edit post action'
+        description: 'Edit post. Access: OWN'
+        tags:
+          - 'M02: Posts'
+        parameters:
+          - name: 'description'
+            in: 'path'
+            required: true
+            schema:
+              type: 'string'
+          - name: 'files'
+            in: 'path'
+            required: true
+            schema:
+              type: 'array'
+          - name: 'public_post'
+            in: 'path'
+            required: true
+            schema:
+              type: 'string'
+          - name: 'date'
+            in: 'path'
+            required: true
+            schema:
+              type: 'string'
+          - name: 'user_id'
+            in: 'path'
+            required: true
+            schema:
+              type: 'integer'
+          - name: 'group_id'
+            in: 'path'
+            required: true
+            schema:
+              type: 'integer'
+        responses:
+          '200': 
+            description: 'All right. Edit Post'
+          '302':
+            description: 'If not logged in, redirect to home page'
+            headers:
+              Location:
+                schema:
+                  type: string
+                examples:
+                  302Success:
+                    description: 'OK. You are in. Redirect to home page.'
+                    value: '/home'
+                  302Failure:
+                    description: 'You shall not pass. Redirect again to home page.'
+                    value: '/home'          
+  
+  /posts/delete:
+      delete:
+        operationId: 'R203'
+        summary: 'R203: Delete post action'
+        description: 'Delete post. Access: OWN'
+        tags:
+          - 'M02: Posts'
+        parameters:
+          - name: 'description'
+            in: 'path'
+            required: true
+            schema:
+              type: 'string'
+          - name: 'files'
+            in: 'path'
+            required: true
+            schema:
+              type: 'array'
+          - name: 'public_post'
+            in: 'path'
+            required: true
+            schema:
+              type: 'string'
+          - name: 'date'
+            in: 'path'
+            required: true
+            schema:
+              type: 'string'
+          - name: 'user_id'
+            in: 'path'
+            required: true
+            schema:
+              type: 'integer'
+          - name: 'group_id'
+            in: 'path'
+            required: true
+            schema:
+              type: 'integer'
+        responses:
+          '200': 
+            description: 'All right. Delete Post'
+          '302':
+            description: 'If not logged in, redirect to home page'
+            headers:
+              Location:
+                schema:
+                  type: string
+                examples:
+                  302Success:
+                    description: 'OK. You are in. Redirect to home page.'
+                    value: '/home'
+                  302Failure:
+                    description: 'You shall not pass. Redirect again to home page.'
+                    value: '/home'          
+
+  /posts:
+      get:
+        operationId: 'R204'
+        summary: 'R204: List posts'
+        description: 'List posts. Access: ADM, USR, OWN, PUB'
+        tags:
+          - 'M02: Posts'
+        parameters:
+          - name: 'description'
+            in: 'path'
+            required: true
+            schema:
+              type: 'string'
+          - name: 'files'
+            in: 'path'
+            required: true
+            schema:
+              type: 'array'
+          - name: 'public_post'
+            in: 'path'
+            required: true
+            schema:
+              type: 'string'
+          - name: 'date'
+            in: 'path'
+            required: true
+            schema:
+              type: 'string'
+          - name: 'user_id'
+            in: 'path'
+            required: true
+            schema:
+              type: 'integer'
+          - name: 'group_id'
+            in: 'path'
+            required: true
+            schema:
+              type: 'integer'
+        responses:
+          '200': 
+            description: 'All right. List Posts'
+
+  /posts/{id}:
+    get:
+      operationId: 'R205'
+      summary: 'R205: View post'
+      description: 'View post. Access: ADM, USR, OWN, PUB'
+      tags:
+        - 'M02: Posts'
+      parameters:
+        - name: 'id'
+          in: 'path'
+          required: true
+          schema:
+            type: 'integer'
+      responses:
+        '200': 
+          description: 'All right. View Post'        
+        '404':
+          description: 'Resource not found'
+  
+  /search:
+      get:
+        operationId: 'R501'
+        summary: 'R501: User Search User'
+        description: 'Search for users. Access: ADM, USR, OWN, PUB'
+        tags:
+          - 'M05: Search'
+        parameters:
+          - name: 'q'
+            in: 'path'
+            required: true
+            schema:
+              type: 'string'
+        responses:
+          '200': 
+            description: 'All right. Search for users'
+  
+  /admin/search:
+      get:
+        operationId: 'R502'
+        summary: 'R502: Admin Search User'
+        description: 'Search for users. Access: ADM'
+        tags:
+          - 'M05: Search'
+        parameters:
+          - name: 'q'
+            in: 'path'
+            required: true
+            schema:
+              type: 'string'
+        responses:
+          '200': 
+            description: 'All right. Search for users'
+
+  /admin/{username}:
+      get:
+        operationId: 'R601'
+        summary: 'R601: Admin See User'
+        description: 'See user. Access: ADM'
+        tags:
+          - 'M06: Administration'
+        parameters:
+          - name: 'username'
+            in: 'path'
+            required: true
+            schema:
+              type: 'string'
+        responses:
+          '200': 
+            description: 'All right. See user'
+          '302':
+            description: 'If not logged in, redirect to login page'
+            headers:
+              Location:
+                schema:
+                  type: string
+                examples:
+                  302Success:
+                    description: 'OK. You are in. Redirect to user profile.'
+                    value: '/admin/{username}'
+                  302Failure:
+                    description: 'You shall not pass. Redirect again to home.'
+                    value: '/admin'
+          '404':
+            description: 'Resource not found'
+
+  /admin/{username}/edit:
+      put:
+        operationId: 'R602'
+        summary: 'R602: Admin Edit User Page'
+        description: 'Edit user. Access: ADM'
+        tags:
+          - 'M06: Administration'
+        parameters:
+          - name: 'username'
+            in: 'path'
+            required: true
+            schema:
+              type: 'string'
+        responses:
+          '200': 
+            description: 'All right. Edit user'
+          '302':
+            description: 'If not logged in, redirect to admin login page'
+            headers:
+              Location:
+                schema:
+                  type: string
+                examples:
+                  302Success:
+                    description: 'OK. You are in. Redirect to user profile.'
+                    value: '/admin/{username}/edit'
+                  302Failure:
+                    description: 'You shall not pass. Redirect again to home.'
+                    value: '/admin'
+          '404':
+            description: 'Resource not found'
+
+  /admin/edit:
+      put:
+        operationId: 'R603'
+        summary: 'R603: Admin Edit User Action'
+        description: 'Edit user. Access: ADM'
+        tags:
+          - 'M06: Administration'
+        parameters:
+          - name: 'username'
+            in: 'path'
+            required: true
+            schema:
+              type: 'string'
+          - name: 'name'
+            in: 'path'
+            required: true
+            schema:
+              type: 'string'
+          - name: 'email'
+            in: 'path'
+            required: true
+            schema:
+              type: 'string'
+          - name: 'phone_number'
+            in: 'path'
+            required: true
+            schema:
+              type: 'string'
+          - name: 'birth_date'
+            in: 'path'
+            required: true
+            schema:
+              type: 'string'
+          - name: 'profile_picture'
+            in: 'path'
+            required: true
+            schema:
+              type: 'string'
+          - name: 'description'
+            in: 'path'
+            required: true
+            schema:
+              type: 'string'
+        responses:
+          '200': 
+            description: 'All right. Edit user'
+          '302':
+            description: 'If not logged in, redirect to login page'
+            headers:
+              Location:
+                schema:
+                  type: string
+                examples:
+                  302Success:
+                    description: 'OK. You are in. Redirect to admin edit.'
+                    value: '/admin/edit'
+                  302Failure:
+                    description: 'You shall not pass. Redirect again to home.'
+                    value: '/admin'
+          '404':
+            description: 'Resource not found'
+   
+  /admin/user/create:
+      get:
+        operationId: 'R604'
+        summary: 'R604: Admin Create User Page'
+        description: 'Create user. Access: ADM'
+        tags:
+          - 'M06: Administration'
+        responses:
+          '200': 
+            description: 'All right. Create user'
+          '302':
+            description: 'If not logged in, redirect to login page'
+            headers:
+              Location:
+                schema:
+                  type: string
+                examples:
+                  302Success:
+                    description: 'OK. You are in. Redirect to admin create.'
+                    value: '/admin/user/create'
+                  302Failure:
+                    description: 'You shall not pass. Redirect again to home.'
+                    value: '/admin'
+  
+  /admin/create:
+     post:
+      operationId: 'R605'
+      summary: 'R605: Admin Create User Action'
+      description: 'Create user. Access: ADM'
+      tags:
+        - 'M06: Administration'
+      parameters:
+        - name: 'name'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+        - name: 'email'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+        - name: 'phone_number'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+        - name: 'birth_date'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+        - name: 'profile_picture'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+        - name: 'description'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+        - name: 'password'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+        - name: 'password_confirmation'
+          in: 'path'
+          required: true
+          schema:
+            type: 'string'
+      responses:
+        '200': 
+          description: 'All right. Create user'
+        '302':
+          description: 'If not logged in, redirect to login page'
+          headers:
+              Location:
+                schema:
+                  type: string
+                examples:
+                  302Success:
+                    description: 'OK. You are in. Redirect to admin create.'
+                    value: '/admin/create'
+                  302Failure:
+                    description: 'You shall not pass. Redirect again to home.'
+                    value: '/admin'
+
+  /login:
+      get:
+        operationId: 'R701'
+        summary: 'R701: Login Form'
+        description: 'Login. Access: PUB'
+        tags:
+          - 'M07: Authentication'
+        responses:
+          '200': 
+            description: 'All right. Login'
+
+      post:
+        operationId: 'R702'
+        summary: 'R702: Login Action'
+        description: 'Login. Acess: PUB'
+        tags:
+          - 'M07: Authentication'
+        parameters:
+          - name: 'email'
+            in: 'path'
+            required: true
+            schema:
+              type: 'string'
+          - name: 'password'
+            in: 'path'
+            required: true
+            schema:
+              type: 'string'
+        responses:
+          '302':
+            description: 'If credentials fail, redirect to login form'
+            headers:
+              Location:
+                schema:
+                  type: string
+                examples:
+                  302Success:
+                    description: 'OK. You are in. Redirect to homepage.'
+                    value: '/home'
+                  302Failure:
+                    description: 'You shall not pass. Redirect again to login form.'
+                    value: '/login'
+
+  /logout:
+      get:
+        operationId: 'R703'
+        summary: 'R703: Logout Action'
+        description: 'Logout. Access: USR, OWN'
+        tags:
+          - 'M07: Authentication'
+        responses:
+          '200': 
+            description: 'All right. Logout'
+          '302':
+            description: 'If not logged in, redirect to login form'
+            headers:
+              Location:
+                schema:
+                  type: string
+                examples:
+                  302Success:
+                    description: 'OK. You are in. Redirect to login form.'
+                    value: '/login'
+                  302Failure:
+                    description: 'You shall not pass. Redirect again to login form.'
+                    value: '/login'
+
+  /register: 
+      get:
+        operationId: 'R704'
+        summary: 'R704: Register Form'
+        description: 'Register. Access: PUB'
+        tags:
+          - 'M07: Authentication'
+        responses:
+          '200': 
+            description: 'All right. Register'
+
+      post:
+        operationId: 'R705'
+        summary: 'R705: Register Action'
+        description: 'Register. Access: PUB'
+        tags:
+          - 'M07: Authentication'
+        parameters:
+          - name: 'name'
+            in: 'path'
+            required: true
+            schema:
+              type: 'string'
+          - name: 'email'
+            in: 'path'
+            required: true
+            schema:
+              type: 'string'
+          - name: 'phone_number'
+            in: 'path'
+            required: true
+            schema:
+              type: 'string'
+          - name: 'birth_date'
+            in: 'path'
+            required: true
+            schema:
+              type: 'string'
+          - name: 'description'
+            in: 'path'
+            required: true
+            schema:
+              type: 'string'
+          - name: 'password'
+            in: 'path'
+            required: true
+            schema:
+              type: 'string'
+          - name: 'password-confirm'
+            in: 'path'
+            required: true
+            schema:
+              type: 'string'
+        responses:
+          '200': 
+            description: 'All right. Register'
+          '302':
+            description: 'If not logged in, redirect to register form'
+            headers:
+              Location:
+                schema:
+                  type: string
+                examples:
+                  302Success:
+                    description: 'OK. You are in. Redirect to homepage.'
+                    value: '/home'
+                  302Failure:
+                    description: 'You shall not pass. Redirect again to login form.'
+                    value: '/register'
